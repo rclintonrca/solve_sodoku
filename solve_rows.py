@@ -1,12 +1,5 @@
 from random import choice, sample
 import numpy as np
-import argparse
-from itertools import permutations
-
-# def get_args():
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("--board_size", type=int, required=False, default=3)
-#     return parser.parse_args()
 
 
 class Board(object):
@@ -53,4 +46,13 @@ if __name__ == "__main__":
     b.solve_board()
 
     b.show()
+
+    """
+    steps
+    1. random choice
+    2. if number hits constraint; try again
+        3. if no number fits (we should find this out first); go back one cell and change it
+        4. continue forward 1-3
+    5. either move forward, or move backward and change cell again (so we do need state to know all the values?)
+    """
     

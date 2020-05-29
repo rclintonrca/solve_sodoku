@@ -1,12 +1,17 @@
 from random import choice, sample
 import numpy as np
 
+class StuckException(Exception):
+    """
+    Raised when an invalid CMBS Type is specified
+    """
 
 class Board(object):
     def __init__(self, board_size=9) -> None:
         self.board_size = board_size
         self.choices = [str(i+1) for i in range(self.board_size)]
         self.board = np.full((self.board_size, self.board_size), "")
+        self.set_of_choices = set(self.choices)
     
     def show(self) -> None:
         print(self.board)
@@ -15,19 +20,36 @@ class Board(object):
         row_set = self.row_as_set(row)
         return choice( list(set(self.choices) -  row_set) ) 
         
-    def row_as_set(self, row) -> set: 
-        return set(row)
+    def column_from_ix(self, ix):
+        return self.board.transpose()[ix]
+    
+    def chosen_number_v2(self, row_set, column_set) -> str:
+        used_values: set = row_set | column_set
+        possible_choices = list(self.set_of_choices -  used_values)
+        
+        if len(possible_choices) > 0:
+            return choice(possible_choices)
+        else:
+            print()
+            self.show()
+            raise StuckException
 
     def fill_row(self, row_index) -> None:
         for ix, el in enumerate(self.board[row_index]):
             if el == '':
-                self.board[row_index][ix] = self.chosen_number(self.board[row_index])
+                set_of_column_values = set(self.column_from_ix(ix))
+                set_of_row_values = set(self.board[row_index])
+
+                answer = self.chosen_number_v2(set_of_row_values, set_of_column_values)
+
+                self.board[row_index][ix] = answer
             else:
                 continue
         return
     
     def make_board_one(self) -> None:
-        self.board[0][0] = '0'
+        self.board[0][0] = '1'
+        self.board[0][1] = '2'
         self.board[1][1] = '1'
         self.board[2][2] = '2'
         return
@@ -38,11 +60,11 @@ class Board(object):
 
 if __name__ == "__main__":
     # args = get_args()
-    b  = Board()
+    b  = Board(3)
     b.make_board_one()
     b.show()
-    print()
-
+    # print(b.board.transpose())
+    # print()
     b.solve_board()
 
     b.show()

@@ -30,19 +30,34 @@ class Board(object):
         if len(possible_choices) > 0:
             return choice(possible_choices)
         else:
-            print()
-            self.show()
             raise StuckException
+
+    def fill_cell(self, row_index, ix)->None:  
+            set_of_column_values = set(self.column_from_ix(ix))
+            set_of_row_values = set(self.board[row_index])
+            
+            try:
+                answer = self.chosen_number_v2(set_of_row_values, set_of_column_values)
+                self.board[row_index][ix] = answer
+                self.show()
+
+            except StuckException:
+                print(f"HELP... I am stuck at...\n\t COL: {row_index} \n\t ROW: {ix}")
+                self.show()
+                print()
+                # as a blunt approach i will replace the prior cell with an empty string and then try again...
+                #  the correct thing to do now is to try and do the ix-1 cell now
+                self.board[row_index][ix - 1 ] = '' 
+                self.fill_cell(row_index, ix - 1 )
+                # reset cell to left
+                # keep track of what values previous cell was so only new values are tried
+                # TODO: need to step back more than one time if it does not work
+                pass
 
     def fill_row(self, row_index) -> None:
         for ix, el in enumerate(self.board[row_index]):
             if el == '':
-                set_of_column_values = set(self.column_from_ix(ix))
-                set_of_row_values = set(self.board[row_index])
-
-                answer = self.chosen_number_v2(set_of_row_values, set_of_column_values)
-
-                self.board[row_index][ix] = answer
+                self.fill_cell(row_index, ix)
             else:
                 continue
         return

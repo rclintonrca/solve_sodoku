@@ -6,6 +6,11 @@ class StuckException(Exception):
     Raised when an invalid CMBS Type is specified
     """
 
+class MaxCyclesReachedExxception(Exception):
+    """
+    raised when more than the max cycles set are needed to solve the board
+    """
+
 class Board(object):
     def __init__(self, board_size=9) -> None:
         self.board_size = board_size
@@ -69,9 +74,23 @@ class Board(object):
         self.board[2][2] = '2'
         return
 
-    def solve_board(self) -> None:
-        for i in range(self.board_size):
-            self.fill_row(i)
+    def should_continue(self, is_solved, cycles, max_cycles) -> bool:
+        if is_solved == True:
+            return False
+        elif cycles < max_cycles:
+            return True
+        else:
+            raise MaxCyclesReachedExxception
+
+
+    def solve_board(self, max_cycles=99) -> None:
+        is_solved = False
+        cycles = 0
+        while self.should_continue(is_solved, cycles, max_cycles):
+            cycles += 1
+            #
+            #
+            #
 
 if __name__ == "__main__":
     # args = get_args()
